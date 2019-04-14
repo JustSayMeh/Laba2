@@ -17,10 +17,29 @@
       print *,'Sucsessful'
       end program main
 
+      integer function feq(x)
+      implicit none
+      real x, y, p, a, b
+      if (abs(x).lt.90.0 + 0.005.and.abs(x).gt.90.0 - 0.00665) then
+      print *, p
+      feq = 1
+      else
+      p = abs((x - y)/max(abs(x),abs(y)))
+      if (p.lt.abs((a - (a + b) / 2)/(a + b))) then
+      feq = 1
+      else
+      feq = 0
+      end if
+      end if
+      end function feq
+
+
+
       real function f(x, y)
       implicit none
-      integer okl
-      real x, y, e, e1
+      character(12) buf, buf2
+      integer okl, feq
+      real x, y
       real xmin,xmax,xs,ymin,ymax,ys,pi, pinf, ninf, bf, rbf
       common /inputs/xmin,xmax,xs,ymin,ymax,ys
       common /consts/pi
@@ -30,14 +49,13 @@
       okl = INT(bf / 180.0)
       bf = bf - okl * 180.0
       end if
-      e = abs(abs(bf) - 90.0) / 90.0
-      e1 = 2 * abs(90.0 - (bf+180.0)/2.0) / (bf+180.0)
-      print *, e1, x, y
       rbf = bf * pi / 180.0
-      if (e.lt.1e-3) then
+      write(buf, "(E10.4)" ) bf
+      write(buf2, "(E10.4)" ) 0.0
+      if (feq(bf).eq.1) then
       f = 0.0
-      else if (e1.lt.1e-3) then
-      f = cos(rbf)/sin(rbf)
+      else if (buf.eq.buf2) then
+      f = pinf
       else
       f = cos(rbf)/sin(rbf)
       end if
