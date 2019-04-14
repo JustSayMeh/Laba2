@@ -39,7 +39,7 @@
       implicit none
       character(12) buf, buf2
       integer okl, feq
-      real x, y
+      real x, y, hjk, hjk2
       real xmin,xmax,xs,ymin,ymax,ys,pi, pinf, ninf, bf, rbf
       common /inputs/xmin,xmax,xs,ymin,ymax,ys
       common /consts/pi
@@ -50,11 +50,13 @@
       bf = bf - okl * 180.0
       end if
       rbf = bf * pi / 180.0
-      write(buf, "(E10.4)" ) bf
-      write(buf2, "(E10.4)" ) 0.0
+      !write(buf, "(E10.4)" ) bf
+      !write(buf2, "(E10.4)" ) 0.0
+      hjk = min(abs(xs),abs(ys),abs(xmin),abs(xmax),abs(ymin),abs(ymax))
+      print *, bf, cos(rbf)/sin(rbf), hjk
       if (feq(bf).eq.1) then
       f = 0.0
-      else if (buf.eq.buf2) then
+      else if (abs(bf).lt.hjk / 100.0) then
       f = pinf
       else
       f = cos(rbf)/sin(rbf)
