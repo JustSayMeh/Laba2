@@ -52,11 +52,11 @@
       rbf = bf * pi / 180.0
       !write(buf, "(E10.4)" ) bf
       !write(buf2, "(E10.4)" ) 0.0
-      hjk = min(abs(xs),abs(ys),abs(xmin),abs(xmax),abs(ymin),abs(ymax))
-      print *, bf, cos(rbf)/sin(rbf), hjk
+      hjk = max(abs(x), abs(y))
+      print *, bf, hjk, cos(rbf)/sin(rbf), bf / hjk
       if (feq(bf).eq.1) then
       f = 0.0
-      else if (abs(bf).lt.hjk / 100.0) then
+      else if ((abs(bf) / hjk).lt.0.0005) then
       f = pinf
       else
       f = cos(rbf)/sin(rbf)
@@ -96,15 +96,8 @@
       if (n.le.0.or.m.le.0) goto 4
       n = stepFilter(xl, n, xmin, xs)
       m = stepFilter(yl, m, ymin, ys)
-      if (xl(n).lt.xmax - xs * 0.01) then
-      n = n + 1
-      xl(n) = xmax
-      end if
-
-      if (yl(m).lt.ymax - ys * 0.01) then
-      m = m + 1
-      yl(m) = ymax
-      end if
+      !xl(n) = xmax
+      !yl(m) = ymax
       goto 5
 4     print *, 'Error: Intervals are not defined correctly'
       stop
@@ -117,21 +110,30 @@
 
       integer function stepFilter(l, n, mn, sp)
       implicit none
+      logical b
       integer k, n, i, swch, swch2
       real th, mn, sp, l(n)
       character (24) buf
+      b = .TRUE.
       k = 1
       swch = 12*mod(k,2)
       write (buf(13: 24), "(E10.4)") l(1)
       do i=1,n-1
       swch = 12*mod(k,2)
       swch2 = 12 - swch
-      th = (mn + i * sp)
+      th = mn + i * sp
       write (buf(1 + swch2: 12 + swch2), "(E10.4)") th
       if (buf(1 + swch2: 12 + swch2).eq.buf(1 + swch: 12 + swch))
      *goto 998
+      !print *, th, sp, th / mn
       k = k + 1
+      !mn - переменная задаваеммая пользователем. 0.0 - переводится свободно
+      if (mn.ne.0.0.and.b.and.abs((th) / mn).lt.1e-7) then
+      l(k) = 0.0
+      b = .FALSE.
+      else
       l(k) = th
+      end if
 998   end do
       stepFilter = k
       end function stepFilter
