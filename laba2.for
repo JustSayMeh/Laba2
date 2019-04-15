@@ -20,16 +20,11 @@
       integer function feq(x)
       implicit none
       real x, y, p, a, b
-      if (abs(x).lt.90.0 + 0.005.and.abs(x).gt.90.0 - 0.00665) then
-      print *, p
-      feq = 1
-      else
-      p = abs((x - y)/max(abs(x),abs(y)))
-      if (p.lt.abs((a - (a + b) / 2)/(a + b))) then
+      ! 90.0 + x = (1 + x/90.0) * 90.0 = 90.0
+      if (abs(abs(x) - 90.0).lt.0.005) then
       feq = 1
       else
       feq = 0
-      end if
       end if
       end function feq
 
@@ -55,7 +50,7 @@
       hjk = max(abs(x), abs(y))
       if (feq(bf).eq.1) then
       f = 0.0
-      else if (hjk.eq.0.0.or.(abs(x + y) / hjk).lt.0.0005) then
+      else if (hjk.eq.0.0.or.(abs(x + y) / hjk).lt.0.00005) then
       f = pinf
       else
       f = cos(rbf)/sin(rbf)
