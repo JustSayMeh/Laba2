@@ -53,10 +53,9 @@
       !write(buf, "(E10.4)" ) bf
       !write(buf2, "(E10.4)" ) 0.0
       hjk = max(abs(x), abs(y))
-      print *, bf, hjk, cos(rbf)/sin(rbf), bf / hjk
       if (feq(bf).eq.1) then
       f = 0.0
-      else if ((abs(bf) / hjk).lt.0.0005) then
+      else if (hjk.eq.0.0.or.(abs(x + y) / hjk).lt.0.0005) then
       f = pinf
       else
       f = cos(rbf)/sin(rbf)
