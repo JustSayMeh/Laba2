@@ -93,10 +93,8 @@
       !xl(n) = xmax
       !yl(m) = ymax
       goto 5
-4     print *, 'Error: Intervals are not defined correctly'
-      stop
-6     print *, 'Error: Unsuccessful step'
-      stop
+4     stop 'Error: Intervals are not defined correctly'
+6     stop 'Error: Unsuccessful step'
 5     end subroutine processF
 
 
@@ -137,23 +135,53 @@
       implicit none
       character(45) FMT, FMTHEAD
       character(45) DELM
-      integer max, n, m, i, j
+      integer max, n, m, i, j, k, end, zpl
       parameter (max = 100000)
       real xl(max), yl(max)
       real xmin, xmax, xs, ymin, ymax, ys, pi, f
       common /inputs/xmin,xmax,xs,ymin,ymax,ys
       common /calcvar/n, m
       common /consts/pi
+      zpl = 6
       open (2, file='output.txt')
-      write(DELM, 900) (n+1) * 13
-      write(FMT, 901), '" || "',n,'," | "'
-      write(FMTHEAD, 902),'" Y   \   X"1x,"|| "', n, '," | "'
-      write (2,FMTHEAD)((xl(j)),j=1,n)
-      write (2, DELM) ('=', i = 1,(n+1) * 13)
+      write(FMTHEAD, 902),'" Y   \   X"1x,"|| "', zpl, '," | "'
       do i=1,m
-      write (2,FMT) (yl(i)),(f(yl(i),xl(j)),
-     *j = 1, n)
+        if (mod(i - 1, zpl).eq.0) then
+            if (i.ne.1) then
+                write(2, *) ""
+                write(2, *) ""
+            end if
+            do k=1, n, zpl
+                end = min(k + zpl - 1, n)
+                write(FMTHEAD, 902),'" Y   \   X"1x,"|| "'
+     *          , end - k + 1,  '," | "'
+                write (2,FMTHEAD, advance="no")((xl(j)),j=k,end)
+                write(2, "(A)", advance="no") "   "
+            end do
+            write(2, *) ""
+            do k=1, n, zpl
+                end = min(k + zpl - 1, n)
+                write(DELM, 900) (end - k + 2) * 13
+                write (2, DELM, advance="no")
+     *          ('=', j = 1,(end - k + 2) * 13)
+                 write(2, "(A)", advance="no") "    "
+            end do
+        end if
+        write(2, *) ""
+        do k=1, n, zpl
+            end = min(k + zpl - 1, n)
+            write(FMT, 901), '" || "', end - k + 1,'," | "'
+            write (2,FMT, advance="no") (yl(i)),(f(xl(j), yl(i)), j = k,
+     *       end)
+            write(2, "(A)", advance="no") "   "
+        end do
+        !write(2, *) ""
       end do
+
+
+
+
+
       close (2)
  900  format ("(",I0,"A",")")
  901  format ("(","E10.4",",",A,",",I0,"(","E10.4",A,")",")")
