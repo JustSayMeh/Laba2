@@ -175,7 +175,6 @@
      *       end)
             write(2, "(A)", advance="no") "   "
         end do
-        !write(2, *) ""
       end do
 
 
